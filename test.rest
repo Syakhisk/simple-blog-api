@@ -1,0 +1,41 @@
+GET http://localhost:3000/users
+###
+
+GET http://localhost:3000/users/1
+###
+
+GET http://localhost:3000/users/99
+###
+
+POST http://localhost:3000/register HTTP/1.1
+content-type: application/json
+
+{
+  "username" : "mamankgeming",
+  "name": "Mamank Geming",
+  "password": "mamankgeming",
+  "email" : "user@user.com"
+}
+###
+
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+
+{
+  "username" : "mamankgeming",
+  "password": "mamankgeming"
+}
+###
+
+
+
+GET http://localhost:3000/posts
+###
+
+POST http://localhost:3000/posts HTTP/1.1
+content-type: application/json
+
+{
+  "username": "a12345",
+}

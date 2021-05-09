@@ -9,6 +9,9 @@ const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
 const categoriesRouter = require("./routes/categories");
 
+const registerRouter = require("./routes/register");
+const loginRouter = require("./routes/login");
+
 const app = express();
 
 app.use(logger("dev"));
@@ -22,5 +25,8 @@ app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 app.use("/comments", commentsRouter);
 app.use("/categories", categoriesRouter);
+
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
 
 module.exports = app;
