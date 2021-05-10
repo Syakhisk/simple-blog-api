@@ -22,46 +22,6 @@ router.get("/:id", async (req, res, next) => {
 	}
 });
 
-const newUserValidation = [
-	check("username")
-		.notEmpty()
-		.withMessage("is required!")
-		.isLength({ min: 5, max: 24 }),
-	check("password")
-		.notEmpty()
-		.withMessage("is required!")
-		.isLength({ min: 8, max: 36 }),
-];
-
-router.post("/", newUserValidation, async (req, res, next) => {
-	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		res
-			.status(422)
-			.json({ errors: errors.array().map((e) => `${e.param} ${e.msg}`) });
-		return;
-	}
-
-	const db = await newUser(req.body);
-
-	res.send(req.body);
-});
-
-const newUser = async (body) => {
-	let data = await prisma.users.create({
-		data: {
-			username: body.username,
-			password: body.password,
-			email: body.email,
-		},
-	});
-
-	console.log(data);
-
-	return data;
-};
-
 const users = async (id = null) => {
 	let data;
 	const select = {

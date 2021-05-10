@@ -1,7 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
-const { check, validationResult } = require("express-validator");
+const { check } = require("express-validator");
+const validate = require("../lib/validate");
 const prisma = require("../lib/prisma");
 const compare = require("../lib/hash_compare");
 const jwt = require("jsonwebtoken");
@@ -14,24 +15,23 @@ const validator = [
 ];
 
 router.post("/", validator, async (req, res, next) => {
-	const errors = validationResult(req).array();
-	if (errors.length > 0) {
-		res.status(422);
-		res.send({ msg: errors.map((e) => `${e.param} ${e.msg}`) });
-		return;
-	}
+	if (!validate(req, res)) return;
 
 	const user = await findUser(req.body);
 	if (user) {
-		const { username, password, role } = user;
+		const { id, username, password, role } = user;
 		const matched = compare(req.body.password, user.password);
 		if (matched) {
 			const token = jwt.sign(
-				{ username, password, role },
-				process.env.ACCESS_TOKEN_SECRET
+				{ id, username, password, role },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: "10m" }
 			);
 			res.status(200);
-			res.send({ msg: "Login successful!", token });
+			res.send({
+				msg: "Login successful!",
+				data: { id, username, role, token },
+			});
 			return;
 		}
 	}
@@ -46,6 +46,7 @@ const findUser = async (body) => {
 			username: body.username,
 		},
 		select: {
+			id: true,
 			username: true,
 			password: true,
 			role: true,

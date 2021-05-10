@@ -1,6 +1,7 @@
 const express = require("express");
-const { check, validationResult } = require("express-validator");
+const { check } = require("express-validator");
 const prisma = require("../lib/prisma");
+const validate = require("../lib/validate");
 const hash = require("../lib/hash_password");
 
 const router = express.Router();
@@ -21,12 +22,7 @@ const validator = [
 ];
 
 router.post("/", validator, async (req, res, next) => {
-	const errors = validationResult(req).array();
-	if (errors.length > 0) {
-		res.status(422);
-		res.send({ msg: errors.map((e) => `${e.param} ${e.msg}`) });
-		return;
-	}
+	if (!validate(req, res)) return;
 
 	const users = await findUser(req.body);
 	if (users.length > 0) {
@@ -38,7 +34,14 @@ router.post("/", validator, async (req, res, next) => {
 	const created = await createUser(req.body);
 	if (created) {
 		res.status(200);
-		res.send({ msg: "Account created sucessfully!" });
+		res.send({
+			msg: "Account created sucessfully!",
+			data: {
+				name: created.name,
+				username: created.username,
+				email: created.email,
+			},
+		});
 		return;
 	}
 
