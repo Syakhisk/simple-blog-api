@@ -1,5 +1,6 @@
 const express = require("express");
 const prisma = require("../lib/prisma");
+const authenticateToken = require("../lib/authenticate_token");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
@@ -10,7 +11,6 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
 	const id = req.params.id;
 	const data = await users(id);
-
 	if (data) {
 		res.send(data);
 	} else {
@@ -21,9 +21,27 @@ router.get("/:id", async (req, res, next) => {
 	}
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticateToken, async (req, res, next) => {
 	const id = req.params.id;
+
+	//* Authorization Process
 	const user = await users(id);
+	if (!user) {
+		res.status(404);
+		res.send({ msg: "User not found!" });
+		return;
+	}
+
+	const userdata = await users(req.user.id);
+	console.log({ userdata, user });
+	if (userdata.id != id && userdata.role != "admin") {
+		res.status(401);
+		res.send({
+			msg: "Insufficient authorization, you don't have access to this account!",
+		});
+		return;
+	}
+
 	if (user) {
 		await delete_(user.id);
 		res.send({ msg: "Sucessfully deleted user!" });
