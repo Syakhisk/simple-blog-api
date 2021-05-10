@@ -11,13 +11,12 @@ POST http://localhost:3000/register HTTP/1.1
 content-type: application/json
 
 {
-  "username" : "mamankgeming",
-  "name": "Mamank Geming",
-  "password": "mamankgeming",
-  "email" : "user@user.com"
+  "username" : "andriposis",
+  "name": "Andri Posis",
+  "password": "andriposis",
+  "email" : "andriposis@user.com"
 }
 ###
-
 
 POST http://localhost:3000/login HTTP/1.1
 content-type: application/json
@@ -26,6 +25,20 @@ content-type: application/json
   "username" : "mamankgeming",
   "password": "mamankgeming"
 }
+
+###
+@mamank = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInVzZXJuYW1lIjoibWFtYW5rZ2VtaW5nIiwicGFzc3dvcmQiOiIkMmIkMTAkejcxWUtPa1VRT2NPMGYzbm9hMnoyT1dLblRKNDJnLlpOUkI3cDNrL2tSWEN2Mm1WTkZHMTYiLCJyb2xlIjoiYXV0aG9yIiwiaWF0IjoxNjIwNjIyMDE2LCJleHAiOjE2MjA2MjI2MTZ9.GVklGfvSrWG5kT9fPprPWvpm_BcFtt8DbE8hlHDgBbg
+###
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+
+{
+  "username" : "andriposis",
+  "password": "andriposis"
+}
+###
+@andri = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsInVzZXJuYW1lIjoiYW5kcmlwb3NpcyIsInBhc3N3b3JkIjoiJDJiJDEwJFN1aG1QQjhhZm9rckRGSlAuOG1HSy5kWXptZG5qSGZaMWdCVVVOZFdhYzVHQ1RQVWhKZXUyIiwicm9sZSI6InN1YnNjcmliZXIiLCJpYXQiOjE2MjA2MjE1NjEsImV4cCI6MTYyMDYyMjE2MX0.rLVV8WIecaRKvbuNG8THFm9EE3PNWnhjd0sYGzMXKK4
 ###
 
 
@@ -33,9 +46,49 @@ content-type: application/json
 GET http://localhost:3000/posts
 ###
 
+
+GET http://localhost:3000/posts/1
+###
+
+GET http://localhost:3000/posts/amazona-sp
+###
+
+
+
+GET http://localhost:3000/posts?page=2
+###
+
+
+GET http://localhost:3000/posts?search=a
+###
+
+GET http://localhost:3000/posts?search=a&page=4
+
+###
+
+
 POST http://localhost:3000/posts HTTP/1.1
 content-type: application/json
+Authorization: BEARER {{mamank}}
 
 {
-  "username": "a12345",
+  "title": "Create a post with authentication!",
+  "content": "this is the content of the post",
+  "slug":"post-with-authentication"
 }
+
+###
+
+PATCH http://localhost:3000/posts HTTP/1.1
+content-type: application/json
+Authorization: BEARER {{andri}}
+
+{
+  "slug": "post-with-authentication-2",
+  "content": "modified content from api using auth"
+}
+###
+
+DELETE http://localhost:3000/posts/48 HTTP/1.1
+content-type: application/json
+Authorization: BEARER {{mamank}}
