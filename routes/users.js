@@ -1,11 +1,10 @@
 const express = require("express");
 const prisma = require("../lib/prisma");
-const { body, check, validationResult } = require("express-validator");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
 	const data = await users();
-	res.send(data);
+	res.send({ count: data.length, users: data });
 });
 
 router.get("/:id", async (req, res, next) => {
@@ -20,6 +19,21 @@ router.get("/:id", async (req, res, next) => {
 			msg: "User not found!",
 		});
 	}
+});
+
+router.delete("/:id", async (req, res, next) => {
+	const id = req.params.id;
+	const user = await users(id);
+	if (user) {
+		await delete_(user.id);
+		res.send({ msg: "Sucessfully deleted user!" });
+		return;
+	} else {
+		res.status(404).send({ msg: "User not found!" });
+	}
+
+	res.status(500);
+	res.send({ msg: "Something went wrong!" });
 });
 
 const users = async (id = null) => {
@@ -46,5 +60,13 @@ const users = async (id = null) => {
 	}
 
 	return data;
+};
+
+const delete_ = async (id) => {
+	return await prisma.users.delete({
+		where: {
+			id: Number(id),
+		},
+	});
 };
 module.exports = router;
