@@ -16,8 +16,8 @@ const validator = [
 	check("password")
 		.notEmpty()
 		.withMessage("is required!")
-		.isLength({ min: 8, max: 36 })
-		.withMessage("must be at between 8 and 36 characters"),
+		.isLength({ min: 6, max: 36 })
+		.withMessage("must be at between 6 and 36 characters"),
 	check("email").isEmail().withMessage("is invalid!"),
 ];
 
@@ -37,6 +37,7 @@ router.post("/", validator, async (req, res, next) => {
 		res.send({
 			msg: "Account created sucessfully!",
 			data: {
+				id: created.id,
 				name: created.name,
 				username: created.username,
 				email: created.email,
@@ -54,6 +55,8 @@ const findUser = async (body) => {
 			OR: [
 				{
 					username: body.username,
+				},
+				{
 					email: body.email,
 				},
 			],
