@@ -77,6 +77,7 @@ const createUser = async (body) => {
 			},
 		});
 	} catch (err) {
+		console.log(err);
 		return null;
 	}
 
