@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model category {
+  id          Int       @id @default(autoincrement())
+  slug        String?   @db.VarChar
+  name        String?   @db.VarChar
+  description String?   @db.VarChar
+  count       Int?
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  posts       posts[]
+}
+
+model posts {
+  id         Int        @id @default(autoincrement())
+  title      String?    @db.VarChar
+  slug       String?    @unique @db.VarChar
+  content    String?    @db.VarChar
+  excerpt    String?    @db.VarChar
+  author     Int?
+  categories Int?
+  thumbnail  String?    @db.VarChar
+  created_at DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?  @default(now()) @db.Timestamptz(6)
+  users      users?     @relation(fields: [author], references: [id])
+  category   category?  @relation(fields: [categories], references: [id])
+  comments   comments[]
+}
+
+model users {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique @db.VarChar
+  email      String?    @db.VarChar
+  name       String?    @db.VarChar
+  created_at DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?  @default(now()) @db.Timestamptz(6)
+  role       role?      @default(subscriber)
+  password   String     @db.VarChar(64)
+  comments   comments[]
+  posts      posts[]
+}
+
+model comments {
+  id         Int       @id @default(autoincrement())
+  content    String?   @db.VarChar
+  author     Int?
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  post_id    Int?
+  users      users?    @relation(fields: [author], references: [id])
+  posts      posts?    @relation(fields: [post_id], references: [id])
+}
+
+enum role {
+  administrator
+  editor
+  author
+  subscriber
+}

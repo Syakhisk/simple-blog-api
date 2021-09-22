@@ -3,32 +3,32 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:../db/dev.db"
 }
 
 model category {
   id          Int       @id @default(autoincrement())
-  slug        String?   @db.VarChar
-  name        String?   @db.VarChar
-  description String?   @db.VarChar
+  slug        String?
+  name        String?
+  description String?
   count       Int?
-  created_at  DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
   posts       posts[]
 }
 
 model posts {
   id         Int        @id @default(autoincrement())
-  title      String?    @db.VarChar
-  slug       String?    @unique @db.VarChar
-  content    String?    @db.VarChar
-  excerpt    String?    @db.VarChar
+  title      String?
+  slug       String?    @unique
+  content    String?
+  excerpt    String?
   author     Int?
   categories Int?
-  thumbnail  String?    @db.VarChar
-  created_at DateTime?  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime?  @default(now()) @db.Timestamptz(6)
+  thumbnail  String?
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @default(now())
   users      users?     @relation(fields: [author], references: [id])
   category   category?  @relation(fields: [categories], references: [id])
   comments   comments[]
@@ -36,31 +36,24 @@ model posts {
 
 model users {
   id         Int        @id @default(autoincrement())
-  username   String     @unique @db.VarChar
-  email      String?    @db.VarChar
-  name       String?    @db.VarChar
-  created_at DateTime?  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime?  @default(now()) @db.Timestamptz(6)
-  role       role?      @default(subscriber)
-  password   String     @db.VarChar(64)
+  username   String     @unique
+  email      String?
+  name       String?
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @default(now())
+  role       Int?       @default(1)
+  password   String
   comments   comments[]
   posts      posts[]
 }
 
 model comments {
   id         Int       @id @default(autoincrement())
-  content    String?   @db.VarChar
+  content    String?
   author     Int?
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
   post_id    Int?
   users      users?    @relation(fields: [author], references: [id])
   posts      posts?    @relation(fields: [post_id], references: [id])
-}
-
-enum role {
-  administrator
-  editor
-  author
-  subscriber
 }
