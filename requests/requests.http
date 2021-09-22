@@ -1,0 +1,5 @@
+#!/bin/env bash
+
+http localhost:3000 \
+  username=ralph1 \
+  password=secret-password

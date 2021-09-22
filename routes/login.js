@@ -24,7 +24,8 @@ router.post("/", validator, async (req, res, next) => {
 		if (matched) {
 			const token = jwt.sign(
 				{ id, username, password, role },
-				process.env.ACCESS_TOKEN_SECRET,
+				// process.env.ACCESS_TOKEN_SECRET,
+				"secret-token",
 				{ expiresIn: "10m" }
 			);
 			res.status(200);
