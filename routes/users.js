@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
 	const data = await users();
-	res.send({ count: data.length, users: data });
+	res.send({ count: data.length, results: data });
 });
 
 router.get("/:id", async (req, res, next) => {

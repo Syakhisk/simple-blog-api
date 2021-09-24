@@ -20,7 +20,7 @@ router.get("/:post_id", async (req, res, next) => {
 	if (post_id) {
 		data = await posts(post_id);
 	}
-	res.send({ count: data.length, comments: data });
+	res.send({ count: data.length, results: data });
 });
 
 /**

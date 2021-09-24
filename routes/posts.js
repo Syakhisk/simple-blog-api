@@ -35,7 +35,7 @@ router.get("/", async (req, res, next) => {
 	} else {
 		data = await posts();
 	}
-	res.send({ count: data.length, page, posts: data });
+	res.send({ count: data.length, page, results: data });
 });
 
 /**
