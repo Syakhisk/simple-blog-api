@@ -21,18 +21,33 @@ const defaults = {
   ],
 };
 
+const seedItem = {
+  posts: true,
+  // users: true,
+  // categories: true,
+  // comment: true,
+};
+
 (async () => {
-  const users = await seedUsers();
-  console.log(users.length)
+  if (seedItem.users) {
+    const users = await seedUsers();
+    console.log(users.length);
+  }
 
-  const categories = await seedCategories();
-  console.log(categories.length);
+  if (seedItem.categories) {
+    const categories = await seedCategories();
+    console.log(categories.length);
+  }
 
-  const posts = await seedPosts();
-  console.log(posts.length);
+  if (seedItem.posts) {
+    const posts = await seedPosts();
+    console.log(posts.length);
+  }
 
-  const comments = await seedComments();
-  console.log(comments.length);
+  if (seedItem.comments) {
+    const comments = await seedComments();
+    console.log(comments.length);
+  }
 })();
 
 async function seedUsers(count = defaults.userCount) {
@@ -55,11 +70,11 @@ async function seedUsers(count = defaults.userCount) {
     data.push(single);
   }
 
-  await deleteBeforeCreate("users", true)
+  await deleteBeforeCreate("users", true);
   data.map(async (single) => {
     await prisma.users.create({ data: single });
-  })
-  
+  });
+
   return data;
 }
 
@@ -77,16 +92,17 @@ async function seedPosts(count = defaults.postCount) {
     single.content = faker.random.words(20);
     single.excerpt = faker.random.words(3);
     single.thumbnail = faker.image.image();
+    single.author = faker.datatype.number(defaults.userCount - 1) + 1
     single.categories =
       faker.datatype.number(defaults.categories.length - 1) + 1;
 
     data.push(single);
   }
 
-  await deleteBeforeCreate("posts", true)
+  await deleteBeforeCreate("posts", true);
   data.map(async (single) => {
     await prisma.posts.create({ data: single });
-  })
+  });
 
   return data;
 }
@@ -108,42 +124,40 @@ async function seedComments(count = defaults.commentCount) {
     data.push(single);
   }
 
-  await deleteBeforeCreate("comments", true)
+  await deleteBeforeCreate("comments", true);
   data.map(async (single) => {
     await prisma.comments.create({ data: single });
-  })
+  });
 
   return data;
 }
 
 async function seedCategories(categories = defaults.categories) {
   const wh = ["When to", "How to", "Where to", "What is", "Who"];
-  const data = []
+  const data = [];
 
   for (let categ of categories) {
     const single = {};
     const word = faker.random.arrayElement(wh);
 
-    single.name = categ
+    single.name = categ;
     single.description = word + " " + faker.lorem.sentence(3);
-    single.slug = faker.helpers.slugify(categ)
+    single.slug = faker.helpers.slugify(categ);
 
     data.push(single);
   }
 
-
-  await deleteBeforeCreate("category", true)
+  await deleteBeforeCreate("category", true);
   data.map(async (single) => {
     await prisma.category.create({ data: single });
-  })
+  });
 
   return categories;
 }
 
-async function deleteBeforeCreate(tableName, status){
+async function deleteBeforeCreate(tableName, status) {
   if (status) {
     await prisma[tableName].deleteMany();
     await prisma.$executeRaw`UPDATE sqlite_sequence SET seq = 0 WHERE name = ${tableName};`;
   }
 }
-
