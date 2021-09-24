@@ -25,39 +25,59 @@ const modifyValidation = [
 /**
  * Get all post
  */
-router.get("/", async (req, res, next) => {
-  let data;
-  const page = req.query.page ? Number(req.query.page) : 1;
-  const search = req.query.search;
-  if (search) {
-    data = await posts({ search, page });
-  } else if (page) {
-    data = await posts({ page });
-  } else {
-    data = await posts();
-  }
+router.get("/", async (req, res) => {
+  const { page = 1, count = 10 } = req.query;
+  const query = {
+    take: count,
+    skip: (page - 1) * count,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      thumbnail: true,
+      created_at: true,
+      updated_at: true,
+      users: {
+        select: { name: true },
+      },
+    },
+  };
+
+  const data = await prisma.posts.findMany(query);
   res.send({ count: data.length, page, results: data });
 });
 
 /**
  * Get one post
  */
-router.get("/:identifier", async (req, res, next) => {
-  let data;
-  const identifier = req.params.identifier;
+router.get("/:identifier", async (req, res) => {
+  const { identifier } = req.params;
 
-  if (isNaN(identifier)) {
-    data = await posts({ slug: identifier });
-  } else {
-    data = await posts({ id: identifier });
-  }
+  const query = {
+    where: {
+      id: isNaN(identifier) ? undefined : Number(identifier),
+      slug: isNaN(identifier) ? identifier : undefined,
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      content: true,
+      excerpt: true,
+      thumbnail: true,
+      created_at: true,
+      updated_at: true,
+      users: {
+        select: { name: true },
+      },
+    },
+  };
 
-  if (data) {
-    res.send(data);
-  } else {
-    res.status(404);
-    res.send({ msg: "Post not found!" });
-  }
+  const data = await prisma.posts.findUnique(query);
+
+  if (data) res.send(data);
+  else res.status(404).send({ msg: "Post not found!" });
 });
 
 /**
