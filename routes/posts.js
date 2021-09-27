@@ -28,7 +28,7 @@ const modifyValidation = [
 router.get("/", async (req, res) => {
   const { page = 1, count = 10 } = req.query;
   const query = {
-    take: count,
+    take: +count,
     skip: (page - 1) * count,
     select: {
       id: true,
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
   };
 
   const data = await prisma.posts.findMany(query);
-  res.send({ count: data.length, page, results: data });
+  res.send({ count: data.length, page, totalPage: 10, results: data });
 });
 
 /**

@@ -2,6 +2,7 @@ const faker = require("faker");
 const hash = require("../lib/hash_password");
 
 const { PrismaClient } = require("@prisma/client");
+const { default: axios } = require("axios");
 const prisma = new PrismaClient();
 
 faker.setLocale("en");
@@ -84,14 +85,22 @@ async function seedPosts(count = defaults.postCount) {
   let data = [];
 
   for (let i = 0; i < count; i++) {
+    console.log(`Posts ${i}`)
     const single = {};
 
     const word = faker.random.arrayElement(wh);
     single.title = word + " " + faker.git.commitMessage();
     single.slug = faker.helpers.slugify(single.title).toLowerCase();
-    single.content = faker.random.words(20);
-    single.excerpt = faker.random.words(3);
-    single.thumbnail = faker.image.image();
+    single.content = faker.lorem.paragraphs(3)
+    single.content += `\n`
+    single.content += `\n`
+    single.content += faker.lorem.paragraphs(10)
+    single.content += `\n`
+    single.content += `\n`
+    single.content += faker.lorem.paragraphs(5)
+    single.excerpt = faker.random.words(5);
+    // single.thumbnail = faker.image.image();
+    single.thumbnail = await axios.get("https://source.unsplash.com/random/800x600").then(res => res.request.res.responseUrl)
     single.author = faker.datatype.number(defaults.userCount - 1) + 1
     single.categories =
       faker.datatype.number(defaults.categories.length - 1) + 1;
