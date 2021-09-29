@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
       created_at: true,
       updated_at: true,
       users: {
-        select: { name: true },
+        select: { name: true, username:true },
       },
     },
   };
@@ -69,7 +69,7 @@ router.get("/:identifier", async (req, res) => {
       created_at: true,
       updated_at: true,
       users: {
-        select: { name: true },
+        select: { name: true, username:true },
       },
     },
   };
@@ -92,7 +92,8 @@ router.post(
 
     //* Authorization Process
     const userdata = await user(req.user.id);
-    if (userdata.role != "author" && userdata.role != "admin") {
+    // if (userdata.role != "author" && userdata.role != "admin") {
+    if (userdata.role != 2 && userdata.role != 1) {
       res.status(401);
       res.send({
         msg: "Insufficient role authorization, you don't have write access!",
